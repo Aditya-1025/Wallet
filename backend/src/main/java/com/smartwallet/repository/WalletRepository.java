@@ -17,5 +17,5 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     // Pessimistic write lock for atomic balance operations (prevents race conditions)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT w FROM Wallet w WHERE w.userId = :userId")
-    Optional<Wallet> findByUserIdWithLock(String userId);
+    Optional<Wallet> findByUserIdWithLock(@org.springframework.data.repository.query.Param("userId") String userId);
 }

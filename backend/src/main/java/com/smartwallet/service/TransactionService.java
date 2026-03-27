@@ -15,16 +15,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.smartwallet.repository.UserRepository;
 import com.smartwallet.model.User;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.smartwallet.dto.WalletNotificationDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class TransactionService {
+ 
+    private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -47,15 +50,20 @@ public class TransactionService {
             throw new IllegalArgumentException("Deposit amount must be greater than zero");
         }
 
+        logger.info("PRE-DEPOSIT: userId={}, amount={}", userId, request.getAmount());
         // Lock wallet for safe update
         Wallet wallet = walletRepository.findByUserIdWithLock(userId)
-                .orElseGet(() -> walletService.getOrCreateWallet(userId));
+                .orElseGet(() -> {
+                    logger.info("Creating new wallet for user: {}", userId);
+                    return walletService.getOrCreateWallet(userId);
+                });
 
         // Update Wallet
         wallet.setBalance(wallet.getBalance().add(request.getAmount()));
         wallet.setTotalDeposit(wallet.getTotalDeposit().add(request.getAmount()));
         wallet.setTransactionCount(wallet.getTransactionCount() + 1);
         walletRepository.save(wallet);
+        logger.info("POST-DEPOSIT wallet saved: userId={}, newBalance={}", userId, wallet.getBalance());
 
         // Record Transaction
         Transaction tx = new Transaction();
@@ -75,6 +83,8 @@ public class TransactionService {
         if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Transfer amount must be greater than zero");
         }
+
+        logger.info("PRE-TRANSFER: sender={}, receiver={}, amount={}", request.getSenderUserId(), request.getReceiverUserId(), request.getAmount());
 
         String actualReceiverId = request.getReceiverUserId();
         // Support for number@wallet or 10-digit mobile number
@@ -102,6 +112,7 @@ public class TransactionService {
                 .orElseThrow(() -> new IllegalArgumentException("Sender wallet not found"));
 
         if (senderWallet.getBalance().compareTo(request.getAmount()) < 0) {
+            logger.error("TRANSFER ERROR: Insufficient funds. wallet={}, requested={}", senderWallet.getBalance(), request.getAmount());
             throw new IllegalArgumentException("Insufficient funds");
         }
 
@@ -121,6 +132,7 @@ public class TransactionService {
         receiverWallet.setTotalReceived(receiverWallet.getTotalReceived().add(request.getAmount()));
         receiverWallet.setTransactionCount(receiverWallet.getTransactionCount() + 1);
         walletRepository.save(receiverWallet);
+        logger.info("POST-TRANSFER: senderBalance={}, receiverBalance={}", senderWallet.getBalance(), receiverWallet.getBalance());
 
         // Record Sender Transaction (Negative perspective)
         Transaction senderTx = new Transaction();
@@ -156,7 +168,7 @@ public class TransactionService {
             messagingTemplate.convertAndSend("/topic/wallet/" + actualReceiverId, notification);
         } catch (Exception e) {
             // Log error, but do not fail the transaction if push notification fails!
-            System.err.println("Failed to send STOMP WebSocket Notification: " + e.getMessage());
+            logger.error("Failed to send STOMP WebSocket Notification: {}", e.getMessage());
         }
 
         return convertToDto(senderTx);

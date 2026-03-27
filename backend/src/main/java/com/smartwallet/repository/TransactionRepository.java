@@ -15,7 +15,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
 
     // All transactions where user is sender or receiver (full history)
     @Query("SELECT t FROM Transaction t WHERE t.userId = :userId OR t.receiverUserId = :userId ORDER BY t.createdAt DESC")
-    List<Transaction> findAllByUserOrderByCreatedAtDesc(String userId);
+    List<Transaction> findAllByUserOrderByCreatedAtDesc(@org.springframework.data.repository.query.Param("userId") String userId);
 
     // Filtered by type
     List<Transaction> findByUserIdAndTypeOrderByCreatedAtDesc(String userId, TransactionType type);
