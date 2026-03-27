@@ -8,6 +8,9 @@ import java.time.LocalDate;
 
 public class PanDto {
 
+    @NotBlank(message = "User ID is required")
+    private String userId;
+
     @NotBlank(message = "PAN name cannot be blank")
     @Pattern(regexp = "^[A-Za-z ]{3,100}$", message = "PAN name must be 3-100 characters with only letters and spaces")
     private String panName;
@@ -19,6 +22,14 @@ public class PanDto {
     @NotNull(message = "Date of birth cannot be null")
     @PastOrPresent(message = "Date of birth must be in the past")
     private LocalDate dob;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getPanName() {
         return panName;

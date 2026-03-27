@@ -30,7 +30,7 @@ const PanScreen = () => {
     }
 
     try {
-      await panService.submitPan(formData.panName, formData.panNumber, formData.dob);
+      await panService.submitPan(formData.panName, formData.panNumber, formData.dob, user.id);
 
       // Mark PAN as verified locally in Context
       completePan();

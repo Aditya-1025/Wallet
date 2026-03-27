@@ -28,7 +28,7 @@ public class PanService {
     /**
      * Submit PAN for verification
      */
-    public PanEntity submitPan(String panName, String panNumber, LocalDate dob) {
+    public PanEntity submitPan(String panName, String panNumber, LocalDate dob, String userId) {
 
         if (panNumber == null || !PAN_PATTERN.matcher(panNumber).matches()) {
             throw new IllegalArgumentException("Invalid PAN format. Must be: 5 uppercase letters, 4 digits, 1 uppercase letter");
@@ -52,6 +52,7 @@ public class PanService {
         }
 
         PanEntity pan = new PanEntity();
+        pan.setUserId(userId);
         pan.setPanName(panName);
         pan.setPanNumber(panNumber);
         pan.setDob(dob);

@@ -17,6 +17,9 @@ public class PanEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id", nullable = false, length = 100)
+    private String userId;
+
     @Column(name = "pan_name", nullable = false, length = 100)
     private String panName;
 
@@ -42,6 +45,14 @@ public class PanEntity {
 
     public Long getId() {
         return id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPanName() {

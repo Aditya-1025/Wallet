@@ -12,7 +12,11 @@ public interface PanRepository extends JpaRepository<PanEntity, Long> {
 
     boolean existsByPanNumber(String panNumber);
 
+    boolean existsByUserId(String userId);
+
     Optional<PanEntity> findByPanNumber(String panNumber);
+
+    Optional<PanEntity> findByUserId(String userId);
 
     List<PanEntity> findByStatus(String status);
 }

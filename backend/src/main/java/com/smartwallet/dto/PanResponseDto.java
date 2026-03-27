@@ -5,14 +5,16 @@ import java.time.LocalDateTime;
 
 public class PanResponseDto {
     private Long id;
+    private String userId;
     private String panName;
     private String panNumber;
     private LocalDate dob;
     private String status;
     private LocalDateTime createdAt;
 
-    public PanResponseDto(Long id, String panName, String panNumber, LocalDate dob, String status, LocalDateTime createdAt) {
+    public PanResponseDto(Long id, String userId, String panName, String panNumber, LocalDate dob, String status, LocalDateTime createdAt) {
         this.id = id;
+        this.userId = userId;
         this.panName = panName;
         this.panNumber = panNumber;
         this.dob = dob;
@@ -22,6 +24,14 @@ public class PanResponseDto {
 
     public Long getId() {
         return id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public void setId(Long id) {

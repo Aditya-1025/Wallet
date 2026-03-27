@@ -35,11 +35,13 @@ public class PanController {
             PanEntity pan = panService.submitPan(
                     request.getPanName(),
                     request.getPanNumber(),
-                    request.getDob()
+                    request.getDob(),
+                    request.getUserId()
             );
             return ResponseEntity.status(HttpStatus.CREATED).body(
                     new PanResponseDto(
                             pan.getId(),
+                            pan.getUserId(),
                             pan.getPanName(),
                             pan.getPanNumber(),
                             pan.getDob(),
@@ -66,6 +68,7 @@ public class PanController {
             return ResponseEntity.ok(
                     new PanResponseDto(
                             pan.getId(),
+                            pan.getUserId(),
                             pan.getPanName(),
                             pan.getPanNumber(),
                             pan.getDob(),
@@ -92,6 +95,7 @@ public class PanController {
             return ResponseEntity.ok(
                     new PanResponseDto(
                             pan.getId(),
+                            pan.getUserId(),
                             pan.getPanName(),
                             pan.getPanNumber(),
                             pan.getDob(),
@@ -116,6 +120,7 @@ public class PanController {
         List<PanResponseDto> responses = pans.stream()
                 .map(pan -> new PanResponseDto(
                         pan.getId(),
+                        pan.getUserId(),
                         pan.getPanName(),
                         pan.getPanNumber(),
                         pan.getDob(),
@@ -142,6 +147,7 @@ public class PanController {
             List<PanResponseDto> responses = pans.stream()
                     .map(pan -> new PanResponseDto(
                             pan.getId(),
+                            pan.getUserId(),
                             pan.getPanName(),
                             pan.getPanNumber(),
                             pan.getDob(),
@@ -168,6 +174,7 @@ public class PanController {
             return ResponseEntity.ok(
                     new PanResponseDto(
                             pan.getId(),
+                            pan.getUserId(),
                             pan.getPanName(),
                             pan.getPanNumber(),
                             pan.getDob(),
@@ -193,6 +200,7 @@ public class PanController {
             return ResponseEntity.ok(
                     new PanResponseDto(
                             pan.getId(),
+                            pan.getUserId(),
                             pan.getPanName(),
                             pan.getPanNumber(),
                             pan.getDob(),
@@ -218,6 +226,7 @@ public class PanController {
             return ResponseEntity.ok(
                     new PanResponseDto(
                             pan.getId(),
+                            pan.getUserId(),
                             pan.getPanName(),
                             pan.getPanNumber(),
                             pan.getDob(),
