@@ -34,7 +34,7 @@ export const authService = {
 
 export const panService = {
   submitPan: async (panName, panNumber, dob, userId) => {
-    const response = await api.post('/pan/submit', { panName, panNumber, dob, userId });
+    const response = await api.post('/v1/pan-screen/details', { panName, panNumber, dob, userId });
     return response.data;
   }
 };
