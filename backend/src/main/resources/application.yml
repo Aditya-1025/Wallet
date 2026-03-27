@@ -31,7 +31,7 @@ spring:
   # MongoDB & Redis
   data:
     mongodb:
-      uri: ${MONGODB_URL:${MONGODB_URI:mongodb://localhost:27017/smart_wallet_onboarding}}
+      uri: ${MONGODB_URL:${MONGODB_URI:${SPRING_DATA_MONGODB_URI:${MONGO_URL:mongodb://localhost:27017/smart_wallet_onboarding}}}}
       database: ${MONGODB_DATABASE:smart_wallet_onboarding}
       auto-index-creation: true
 
@@ -43,7 +43,7 @@ spring:
   # SMTP Configuration (Brevo)
   mail:
     host: ${MAIL_HOST:smtp-relay.brevo.com}
-    port: ${MAIL_PORT:587}
+    port: ${MAIL_PORT:2525}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
