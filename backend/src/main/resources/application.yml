@@ -57,9 +57,6 @@ spring:
             enable: true
             required: true
 
-  brevo:
-    api-key: ${BREVO_API_KEY:${MAIL_PASSWORD}}
-
 management:
   endpoints:
     web:

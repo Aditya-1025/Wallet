@@ -14,7 +14,7 @@ public class EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${brevo.api-key:}")
+    @Value("${spring.mail.password}")
     private String apiKey;
 
     // Verified sender address for Brevo
