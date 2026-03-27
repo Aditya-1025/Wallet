@@ -44,9 +44,11 @@ export const WalletProvider = ({ children }) => {
 
         // derive the WS endpoint relative to the API base URL or window origin
         const apiBase = import.meta.env.VITE_API_BASE_URL || '';
-        const wsUrl = apiBase.startsWith('http') 
-            ? apiBase.replace(/^http/, 'ws') + '/ws-wallet' 
-            : '/ws-wallet';
+        // SockJS handles the upgrade from http/https to ws/wss internally.
+        // We must pass the http/https URL.
+        const wsUrl = apiBase.endsWith('/') 
+            ? apiBase + 'ws-wallet' 
+            : apiBase + '/ws-wallet';
             
         const socket = new SockJS(wsUrl);
         const stompClient = Stomp.over(socket);

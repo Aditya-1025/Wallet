@@ -19,8 +19,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // The frontend will invoke new SockJS('/ws-wallet') to establish the connection
-        registry.addEndpoint("/ws-wallet")
+        // The frontend will invoke new SockJS('/api/ws-wallet') to establish the connection
+        registry.addEndpoint("/api/ws-wallet")
                 .setAllowedOriginPatterns("*") 
                 .withSockJS();
     }
