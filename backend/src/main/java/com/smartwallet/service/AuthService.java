@@ -27,6 +27,12 @@ public class AuthService {
 
     @Transactional
     public User register(String name, String email, String password, String mobileNumber) {
+        logger.info("REGISTRATION ATTEMPT: name={}, email={}, mobile={}", name, email, mobileNumber);
+        
+        if (password == null || password.isEmpty()) {
+            logger.error("REGISTRATION FAILED: Password is null or empty");
+            throw new RuntimeException("Password is required");
+        }
 
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("User already exists with this email");
