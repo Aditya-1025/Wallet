@@ -40,7 +40,7 @@ spring:
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
 
-  # SMTP Configuration (Brevo)
+  # SMTP & API Configuration (Brevo)
   mail:
     host: ${MAIL_HOST:smtp-relay.brevo.com}
     port: ${MAIL_PORT:587}
@@ -56,6 +56,9 @@ spring:
           starttls:
             enable: true
             required: true
+
+  brevo:
+    api-key: ${BREVO_API_KEY:${MAIL_PASSWORD}}
 
 management:
   endpoints:

@@ -14,7 +14,7 @@ public class EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${spring.mail.password}")
+    @Value("${brevo.api-key:}")
     private String apiKey;
 
     // Verified sender address for Brevo
@@ -39,9 +39,16 @@ public class EmailService {
 
     private void sendEmailViaHttp(String to, String subject, String content, String context) {
         logger.info("PRE-SEND (HTTP): Attempting to send {} to {}", context, to);
+        
+        if (apiKey == null || apiKey.isEmpty()) {
+            logger.error("POST-SEND (HTTP) CRITICAL ERROR: Brevo API Key is MISSING. Ensure BREVO_API_KEY or MAIL_PASSWORD is set.");
+            throw new RuntimeException("Email delivery failed: API Key missing");
+        }
+
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
             headers.set("api-key", apiKey);
 
             Map<String, Object> body = new HashMap<>();
@@ -57,8 +64,11 @@ public class EmailService {
                 logger.info("POST-SEND (HTTP) SUCCESS: {} sent to {}", context, to);
             } else {
                 logger.error("POST-SEND (HTTP) ERROR: Brevo returned status {}: {}", response.getStatusCode(), response.getBody());
-                throw new RuntimeException("Email delivery failed via HTTP API");
+                throw new RuntimeException("Email delivery failed via HTTP API. Status: " + response.getStatusCode());
             }
+        } catch (org.springframework.web.client.HttpClientErrorException.Unauthorized e) {
+            logger.error("POST-SEND (HTTP) AUTH ERROR: 401 Unauthorized. Key length: {}. Body: {}", apiKey.length(), e.getResponseBodyAsString());
+            throw new RuntimeException("Email delivery failed: API Key Invalid (401)");
         } catch (Exception e) {
             logger.error("POST-SEND (HTTP) CRITICAL ERROR: Failed to send {}: {}", context, e.getMessage());
             throw new RuntimeException("Email delivery failed: " + e.getMessage());
