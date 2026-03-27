@@ -1,63 +1,66 @@
 package com.smartwallet.service;
 
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.*;
 
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${spring.mail.password}")
+    private String apiKey;
 
     // Verified sender address for Brevo
     private String fromEmail = "adityakanoujia30@gmail.com";
-    private String verificationSenderName = "welcome";
-    private String resetSenderName = "reset-wallet";
+    private String senderName = "Smart Wallet";
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    private final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
     public void sendVerificationEmail(String to, String otp) {
-        logger.info("PRE-SEND: Attempting to send verification email to {} from {} <{}>", to, verificationSenderName, fromEmail);
-        try {
-            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
-            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, "UTF-8");
-            
-            helper.setFrom(fromEmail, verificationSenderName);
-            helper.setTo(to);
-            helper.setSubject("Smart Wallet - Verify Your Email");
-            helper.setText("Welcome to Smart Wallet! Your verification code is: " + otp + 
-                           "\n\nThis code will expire in 10 minutes.");
-            
-            mailSender.send(message);
-            logger.info("POST-SEND: Verification email sent successfully to: {}", to);
-        } catch (Exception e) {
-            logger.error("POST-SEND ERROR: Failed to send verification email for {}: {}", to, e.getMessage());
-            throw new RuntimeException("Email delivery failed: " + e.getMessage());
-        }
+        String subject = "Smart Wallet - Verify Your Email";
+        String content = "Welcome to Smart Wallet! Your verification code is: " + otp + 
+                         "\n\nThis code will expire in 10 minutes.";
+        sendEmailViaHttp(to, subject, content, "Email Verification");
     }
 
     public void sendForgotPasswordEmail(String to, String otp) {
-        logger.info("PRE-SEND: Attempting to send reset email to {} from {} <{}>", to, resetSenderName, fromEmail);
+        String subject = "Smart Wallet - Password Reset Request";
+        String content = "You requested a password reset. Your OTP is: " + otp + 
+                         "\n\nIf you didn't request this, please ignore this email.";
+        sendEmailViaHttp(to, subject, content, "Password Reset");
+    }
+
+    private void sendEmailViaHttp(String to, String subject, String content, String context) {
+        logger.info("PRE-SEND (HTTP): Attempting to send {} to {}", context, to);
         try {
-            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
-            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, "UTF-8");
-            
-            helper.setFrom(fromEmail, resetSenderName);
-            helper.setTo(to);
-            helper.setSubject("Smart Wallet - Password Reset Request");
-            helper.setText("You requested a password reset. Your OTP is: " + otp + 
-                           "\n\nIf you didn't request this, please ignore this email.");
-            
-            mailSender.send(message);
-            logger.info("POST-SEND: Password reset email sent successfully to: {}", to);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("api-key", apiKey);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("sender", Map.of("name", senderName, "email", fromEmail));
+            body.put("to", List.of(Map.of("email", to)));
+            body.put("subject", subject);
+            body.put("textContent", content);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(BREVO_API_URL, entity, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                logger.info("POST-SEND (HTTP) SUCCESS: {} sent to {}", context, to);
+            } else {
+                logger.error("POST-SEND (HTTP) ERROR: Brevo returned status {}: {}", response.getStatusCode(), response.getBody());
+                throw new RuntimeException("Email delivery failed via HTTP API");
+            }
         } catch (Exception e) {
-            logger.error("POST-SEND ERROR: Failed to send reset email: {}", e.getMessage());
+            logger.error("POST-SEND (HTTP) CRITICAL ERROR: Failed to send {}: {}", context, e.getMessage());
             throw new RuntimeException("Email delivery failed: " + e.getMessage());
         }
     }
