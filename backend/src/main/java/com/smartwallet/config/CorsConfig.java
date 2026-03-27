@@ -15,10 +15,14 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 // Allow all origins, methods, and headers for development
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
+                        .allowedOrigins(
+                                "https://wallet-aditya-kanaujias-projects.vercel.app",
+                                "https://wallet-zeta-beryl.vercel.app",
+                                "http://localhost:5173"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(false);
+                        .allowCredentials(true);
             }
         };
     }

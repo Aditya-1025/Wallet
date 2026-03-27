@@ -21,7 +21,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // The frontend will invoke new SockJS('/api/ws-wallet') to establish the connection
         registry.addEndpoint("/api/ws-wallet")
-                .setAllowedOriginPatterns("*") 
+                .setAllowedOrigins(
+                        "https://wallet-aditya-kanaujias-projects.vercel.app",
+                        "https://wallet-zeta-beryl.vercel.app",
+                        "http://localhost:5173"
+                )
                 .withSockJS();
     }
 }
