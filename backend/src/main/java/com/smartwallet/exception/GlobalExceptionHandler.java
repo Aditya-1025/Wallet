@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
         logger.error("400 BAD REQUEST: RuntimeException caught: {}", ex.getMessage());
         Map<String, String> response = new HashMap<>();
         response.put("error", ex.getMessage());
+        response.put("message", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
