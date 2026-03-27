@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/transaction")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class TransactionController {
 
     @Autowired
