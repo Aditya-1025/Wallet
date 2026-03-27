@@ -1,0 +1,35 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "version": "v2",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "sleepApplication": false,
+    "restartPolicyType": "ON_FAILURE"
+  },
+  "services": {
+    "smart-wallet-backend": {
+      "source": {
+        "directory": "."
+      },
+      "environment": {
+        "SPRING_DATASOURCE_URL": "jdbc:postgresql://${{ postgres.POSTGRES_HOST }}:${{ postgres.POSTGRES_PORT }}/${{ postgres.POSTGRES_DATABASE }}",
+        "SPRING_DATASOURCE_USERNAME": "${{ postgres.POSTGRES_USER }}",
+        "SPRING_DATASOURCE_PASSWORD": "${{ postgres.POSTGRES_PASSWORD }}",
+        "MONGODB_URI": "${{ mongodb.MONGODB_URL }}",
+        "REDIS_HOST": "${{ redis.REDIS_HOST }}",
+        "REDIS_PORT": "${{ redis.REDIS_PORT }}",
+        "REDIS_PASSWORD": "${{ redis.REDIS_PASSWORD }}",
+        "MAIL_HOST": "smtp-relay.brevo.com",
+        "MAIL_PORT": "465",
+        "MAIL_USERNAME": "",
+        "MAIL_PASSWORD": "",
+        "HIBERNATE_DDL_AUTO": "update",
+        "PORT": "8081"
+      }
+    }
+  }
+}

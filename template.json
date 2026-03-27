@@ -1,0 +1,42 @@
+{
+  "version": "v2",
+  "name": "Smart Wallet Full Stack",
+  "services": {
+    "backend": {
+      "source": {
+        "repo": "Aditya-1025/Smart-Wallet_",
+        "directory": "backend"
+      },
+      "build": {
+        "builder": "DOCKERFILE",
+        "dockerfilePath": "Dockerfile"
+      },
+      "env": {
+        "SPRING_DATASOURCE_URL": "jdbc:postgresql://${{ postgres.POSTGRES_HOST }}:${{ postgres.POSTGRES_PORT }}/${{ postgres.POSTGRES_DATABASE }}",
+        "POSTGRES_USER": "${{ postgres.POSTGRES_USER }}",
+        "POSTGRES_PASSWORD": "${{ postgres.POSTGRES_PASSWORD }}",
+        "MONGODB_URI": "${{ mongodb.MONGODB_URL }}",
+        "REDIS_HOST": "${{ redis.REDIS_HOST }}",
+        "REDIS_PORT": "${{ redis.REDIS_PORT }}",
+        "SERVER_PORT": "8081"
+      }
+    },
+    "postgres": {
+      "image": "postgres:14",
+      "env": {
+        "POSTGRES_PASSWORD": "${{ RAILWAY_PASSWORD }}",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_DB": "smart_wallet_db"
+      }
+    },
+    "mongodb": {
+      "image": "mongo:6",
+      "env": {
+        "MONGO_INITDB_DATABASE": "smart_wallet_onboarding"
+      }
+    },
+    "redis": {
+      "image": "redis:7-alpine"
+    }
+  }
+}

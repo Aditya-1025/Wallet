@@ -1,0 +1,64 @@
+server:
+  port: ${PORT:8081}
+  error:
+    include-message: always
+    include-stacktrace: never
+
+spring:
+  application:
+    name: smart-wallet-backend
+
+  # PostgreSQL - financial data
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/smart_wallet_db}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  flyway:
+    enabled: ${FLYWAY_ENABLED:false}  # temporarily disabled until Flyway version is aligned with PostgreSQL 14.20
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # MongoDB & Redis
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/smart_wallet_onboarding}
+      database: ${MONGODB_DATABASE:smart_wallet_onboarding}
+      auto-index-creation: true
+
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+  # SMTP Configuration (Brevo)
+  mail:
+    host: ${MAIL_HOST:smtp-relay.brevo.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
