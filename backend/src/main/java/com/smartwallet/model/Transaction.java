@@ -37,6 +37,10 @@ public class Transaction {
     private TransactionType type;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", nullable = false)
+    private TransactionType transactionType;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TransactionStatus status = TransactionStatus.PENDING;
 
@@ -115,6 +119,7 @@ public class Transaction {
 
     public void setType(TransactionType type) {
         this.type = type;
+        this.transactionType = type; // Keep both in sync for DB constraints
     }
 
     public TransactionStatus getStatus() {
