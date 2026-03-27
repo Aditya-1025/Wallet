@@ -38,7 +38,7 @@ public class User {
     private LocalDateTime otpExpiry;
 
     // ✅ REQUIRED by JPA
-    protected User() {
+    public User() {
     }
 
     // Convenience constructor
